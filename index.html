@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>김포 파르코스 테니스장 코트 현황</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+     background:#f0f4f8;color:#222;min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+
+/* ── 네비 ── */
+.navbar{background:#1c2e4a;position:sticky;top:0;z-index:1000;
+        box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;
+           height:54px;padding:0 20px;gap:8px}
+.nav-brand{font-size:1.05rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px}
+.nav-brand:hover{color:#5dade2}
+.nav-links{display:flex;gap:2px;flex:1;margin-left:10px}
+.nav-links a{padding:7px 13px;color:rgba(255,255,255,.75);border-radius:6px;
+             font-size:.85rem;transition:.15s;white-space:nowrap}
+.nav-links a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-links a.active{background:rgba(93,173,226,.22);color:#5dade2;font-weight:700}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav-badge{padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.1);
+           color:rgba(255,255,255,.7);font-size:.76rem}
+.nav-btn{padding:5px 13px;border-radius:6px;background:#27ae60;color:#fff;
+         font-size:.8rem;font-weight:700}
+.nav-btn:hover{background:#219a52}
+
+/* ── 탭 ── */
+.page-tabs{display:flex;border-bottom:2px solid #e0e0e0;margin-bottom:0}
+.ptab{padding:10px 18px;cursor:pointer;font-size:.88rem;font-weight:600;
+      color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;
+      transition:.15s;white-space:nowrap}
+.ptab.active{color:#1c2e4a;border-bottom-color:#1c2e4a}
+.ptab:hover:not(.active){color:#555}
+
+/* ── 날짜 탭 ── */
+.date-tabs{display:flex;gap:5px;flex-wrap:wrap;padding:14px 0 2px}
+.dtab{padding:5px 13px;border-radius:20px;background:#fff;
+      border:2px solid #ddd;cursor:pointer;font-size:.79rem;
+      font-weight:600;transition:.15s;white-space:nowrap;user-select:none}
+.dtab.active{background:#1c2e4a;color:#fff;border-color:#1c2e4a}
+.dtab:hover:not(.active){border-color:#1c2e4a;color:#1c2e4a}
+.dtab.sun{color:#e74c3c}.dtab.sat{color:#2e86c1}
+.dtab.active.sun,.dtab.active.sat{color:#fff}
+
+/* ── 테이블 ── */
+.tbl-wrap{overflow-x:auto;margin-top:12px}
+table.ct{width:100%;border-collapse:collapse;font-size:.84rem;
+         border-radius:10px;overflow:hidden;
+         box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.ct th{background:#1c2e4a;color:#fff;padding:9px 7px;
+       text-align:center;font-weight:600;white-space:nowrap}
+.ct td{padding:7px 5px;text-align:center;border-bottom:1px solid #eee}
+.ct tr:last-child td{border-bottom:none}
+.ct tr:hover td{background:#f7fafc}
+.tc{font-weight:700;color:#555;font-size:.82rem}
+.slot-o{background:#d5f5e3;color:#1e8449;font-weight:700;
+        border-radius:5px;padding:3px 2px;display:block}
+.slot-x{background:#fadbd8;color:#c0392b;
+        border-radius:5px;padding:3px 2px;display:block}
+.slot-na{color:#ddd}
+.night-sep td{border-top:2.5px solid #2e86c1}
+
+/* ── 범례 ── */
+.legend{display:flex;gap:14px;align-items:center;font-size:.78rem;
+        color:#666;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;flex-shrink:0}
+.dot-o{background:#1e8449}.dot-x{background:#c0392b}
+
+/* ── 배지 ── */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;
+       font-size:.73rem;font-weight:700}
+.b-green{background:#d5f5e3;color:#1e8449}
+.b-red{background:#fadbd8;color:#c0392b}
+.b-blue{background:#d6eaf8;color:#1a5276}
+.b-gray{background:#f0f0f0;color:#888}
+
+/* ── 히트맵 ── */
+.hm-row{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.hm-time{width:46px;font-size:.75rem;color:#888;text-align:right;flex-shrink:0}
+.hm-cells{display:flex;gap:3px;flex:1}
+.hm-cell{flex:1;height:20px;border-radius:3px}
+.hm-o{background:#1e8449}.hm-x{background:#e74c3c}.hm-na{background:#eee}
+
+/* ── 통계 ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+.stat-card{background:#fff;border-radius:10px;padding:16px;text-align:center;
+           box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.stat-num{font-size:1.9rem;font-weight:800;line-height:1.1}
+.stat-label{font-size:.74rem;color:#999;margin-top:4px}
+.bar-wrap{margin-bottom:9px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:3px}
+.bar-bg{background:#f0f0f0;border-radius:20px;height:9px;overflow:hidden}
+.bar-fill{height:9px;border-radius:20px;transition:width .4s}
+
+/* ── 소개 ── */
+.hero{background:linear-gradient(135deg,#1c2e4a,#2e86c1);border-radius:14px;
+      padding:44px 32px;text-align:center;color:#fff;margin-bottom:20px}
+.hero h1{font-size:1.9rem;font-weight:800;margin-bottom:8px}
+.hero p{opacity:.85;font-size:.9rem}
+.hero-btn{display:inline-block;margin-top:20px;padding:11px 26px;
+          background:#27ae60;color:#fff;font-weight:700;border-radius:8px;font-size:.95rem}
+.hero-btn:hover{background:#219a52}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.info-card{background:#fff;border-radius:10px;padding:18px;text-align:center;
+           box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.info-icon{font-size:1.8rem;margin-bottom:8px}
+.info-title{font-weight:700;font-size:.88rem;margin-bottom:4px}
+.info-val{font-size:.8rem;color:#777;line-height:1.6}
+.steps{list-style:none;padding:0}
+.step-item{display:flex;align-items:flex-start;gap:13px;padding:12px 0;
+           border-bottom:1px solid #f0f0f0}
+.step-item:last-child{border-bottom:none}
+.step-num{min-width:30px;height:30px;border-radius:50%;background:#1c2e4a;
+          color:#fff;font-weight:800;font-size:.8rem;display:flex;
+          align-items:center;justify-content:center;flex-shrink:0}
+.step-title{font-weight:700;font-size:.88rem;margin-bottom:2px}
+.step-desc{font-size:.79rem;color:#888}
+
+/* ── 카드 ── */
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.07);
+      padding:20px;margin-bottom:16px}
+.card-title{font-size:.9rem;font-weight:700;color:#1c2e4a;margin-bottom:14px;
+            display:flex;align-items:center;gap:7px}
+.sub-bar{background:#f8f9fc;border-radius:10px;padding:12px 16px;margin-bottom:16px;
+         display:flex;align-items:center;gap:10px;border-left:4px solid #2e86c1}
+
+/* ── 공통 ── */
+.container{max-width:1100px;margin:0 auto;padding:22px 18px}
+.msg{text-align:center;padding:40px;color:#999;font-size:.9rem}
+.updated{font-size:.73rem;color:#bbb;margin-top:6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+
+/* ── 푸터 ── */
+footer{background:#1c2e4a;color:rgba(255,255,255,.45);text-align:center;
+       padding:16px;font-size:.74rem;line-height:1.9;margin-top:auto}
+footer a{color:rgba(255,255,255,.65)}
+footer a:hover{color:#fff}
+</style>
+</head>
+<body>
+
+<!-- ═══ 네비 ═══ -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">🎾 김포 테니스</a>
+    <div class="nav-links">
+      <a href="#" onclick="showTab('intro')" id="nav-intro" class="active">🏠 소개</a>
+      <a href="#" onclick="showTab('court')" id="nav-court">🏟️ 코트현황</a>
+      <a href="#" onclick="showTab('stats')" id="nav-stats">📊 참여현황</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-badge" id="metaUpdated">로딩 중...</span>
+      <a class="nav-btn" href="http://www.gimposports.or.kr/bbs/orderCourse.php"
+         target="_blank">예약하기 →</a>
+    </div>
+  </div>
+</nav>
+
+<div style="flex:1">
+
+<!-- ═══════════════════════════════
+     소개 탭
+═══════════════════════════════ -->
+<div id="tab-intro" class="container">
+  <div class="hero">
+    <div style="font-size:3rem;margin-bottom:12px">🎾</div>
+    <h1>김포 파르코스 테니스장</h1>
+    <p>코트 예약 현황을 실시간으로 확인하고 빠르게 예약하세요</p>
+    <a href="#" onclick="showTab('court')" class="hero-btn">🏟️ 코트 현황 바로보기</a>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-icon">📍</div>
+      <div class="info-title">위치</div>
+      <div class="info-val">김포시 고촌읍<br>신곡로 114-13</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">⏰</div>
+      <div class="info-title">운영시간</div>
+      <div class="info-val">매일<br>06:00 ~ 23:00</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🏟️</div>
+      <div class="info-title">코트 수</div>
+      <div class="info-val">총 8면<br>1코트 ~ 8코트</div>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">📞</div>
+      <div class="info-title">문의</div>
+      <div class="info-val">010-6767-4994<br>070-4647-0741</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 사용료
+      <span style="font-size:.73rem;font-weight:400;color:#999">(2시간 1타임 1면 기준)</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:.85rem">
+      <thead>
+        <tr style="background:#f0f4f8">
+          <th style="padding:9px 12px;text-align:left;font-weight:600;border-radius:6px 0 0 6px">구분</th>
+          <th style="padding:9px;text-align:center;font-weight:600">주간</th>
+          <th style="padding:9px;text-align:center;font-weight:600;border-radius:0 6px 6px 0">야간</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 12px;border-bottom:1px solid #f0f0f0">평일</td>
+          <td style="padding:9px;text-align:center;border-bottom:1px solid #f0f0f0">10,000원</td>
+          <td style="padding:9px;text-align:center;border-bottom:1px solid #f0f0f0">20,000원</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px">주말·공휴일</td>
+          <td style="padding:9px;text-align:center">20,000원</td>
+          <td style="padding:9px;text-align:center">30,000원</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:.75rem;color:#aaa;margin-top:8px">※ 관외 거주자 사용료 50% 가산</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚀 예약 방법</div>
+    <ul class="steps">
+      <li class="step-item">
+        <div class="step-num">1</div>
+        <div><div class="step-title">홈페이지 로그인</div>
+          <div class="step-desc">김포시체육회 사이트 회원가입 후 로그인</div></div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">2</div>
+        <div><div class="step-title">코트 선택</div>
+          <div class="step-desc">파르코스 테니스장에서 원하는 코트를 선택</div></div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">3</div>
+        <div><div class="step-title">날짜·시간 선택</div>
+          <div class="step-desc">예약 가능한 날짜와 시간대 확인 후 선택</div></div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">4</div>
+        <div><div class="step-title">신청 및 결제</div>
+          <div class="step-desc">예약 신청 후 기한 내 사용료 입금</div></div>
+      </li>
+      <li class="step-item">
+        <div class="step-num">5</div>
+        <div><div class="step-title">관리실 방문·이용</div>
+          <div class="step-desc">이용 당일 관리사무실에서 확인 후 입장</div></div>
+      </li>
+    </ul>
+    <div style="text-align:center;margin-top:16px">
+      <a href="http://www.gimposports.or.kr/bbs/orderCourse.php"
+         target="_blank" class="hero-btn" style="font-size:.85rem;padding:9px 22px">
+        🔗 공식 예약 사이트 바로가기
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     코트현황 탭
+═══════════════════════════════ -->
+<div id="tab-court" class="container" style="display:none">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+    <div>
+      <h2 style="font-size:1.4rem;font-weight:800;color:#1c2e4a">🏟️ 코트 현황</h2>
+      <p style="font-size:.82rem;color:#999;margin-top:3px">날짜 탭을 클릭하면 즉시 조회됩니다</p>
+    </div>
+    <a href="http://www.gimposports.or.kr/bbs/orderCourse.php" target="_blank"
+       class="hero-btn" style="font-size:.8rem;padding:7px 16px">공식 예약 →</a>
+  </div>
+
+  <div class="sub-bar">
+    <span style="font-size:1.1rem">🎾</span>
+    <div>
+      <div style="font-weight:700;font-size:.9rem">파르코스 테니스장</div>
+      <div style="font-size:.77rem;color:#777;margin-top:1px">고촌읍 신곡로 114-13 · 06:00~23:00 · 8면</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding-bottom:14px">
+    <div class="date-tabs" id="courtDateTabs"></div>
+
+    <div id="courtMsg" class="msg">날짜 탭을 선택하세요</div>
+    <div id="courtResult" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <div class="legend">
+          <span><span class="dot dot-o"></span> 예약 가능</span>
+          <span><span class="dot dot-x"></span> 예약 불가</span>
+          <span style="color:#2e86c1;font-size:.75rem">│ = 야간</span>
+        </div>
+        <div id="courtSummary" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+      </div>
+      <div class="updated" id="courtUpdated"></div>
+      <div class="tbl-wrap">
+        <table class="ct">
+          <thead id="courtThead"></thead>
+          <tbody id="courtTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     참여현황 탭
+═══════════════════════════════ -->
+<div id="tab-stats" class="container" style="display:none">
+  <div style="margin-bottom:16px">
+    <h2 style="font-size:1.4rem;font-weight:800;color:#1c2e4a">📊 참여현황</h2>
+    <p style="font-size:.82rem;color:#999;margin-top:3px">날짜별 전체 코트 예약 현황과 혼잡도</p>
+  </div>
+
+  <div class="card">
+    <div class="date-tabs" id="statsDateTabs"></div>
+
+    <div id="statsMsg" class="msg">날짜 탭을 선택하세요</div>
+    <div id="statsResult" style="display:none">
+      <div class="updated" id="statsUpdated" style="margin-top:10px"></div>
+
+      <!-- KPI -->
+      <div class="stat-grid" style="margin-top:10px">
+        <div class="stat-card">
+          <div class="stat-num" style="color:#1c2e4a" id="s-total">-</div>
+          <div class="stat-label">전체 슬롯</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#27ae60" id="s-avail">-</div>
+          <div class="stat-label">예약 가능</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#e74c3c" id="s-booked">-</div>
+          <div class="stat-label">예약됨</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color:#e67e22" id="s-rate">-</div>
+          <div class="stat-label">예약률</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- 코트별 바 -->
+        <div>
+          <div class="card-title">🏟️ 코트별 예약률</div>
+          <div id="courtBars"></div>
+          <div style="display:flex;gap:12px;margin-top:8px;font-size:.72rem;color:#aaa">
+            <span>● 여유 &lt;50%</span>
+            <span style="color:#e67e22">● 보통 50~79%</span>
+            <span style="color:#e74c3c">● 혼잡 80%+</span>
+          </div>
+        </div>
+        <!-- 히트맵 -->
+        <div>
+          <div class="card-title">🌡️ 시간대×코트 혼잡도</div>
+          <div style="display:flex;gap:10px;margin-bottom:7px;font-size:.72rem">
+            <span style="display:flex;align-items:center;gap:3px">
+              <span style="width:10px;height:10px;background:#1e8449;border-radius:2px;display:inline-block"></span>가능
+            </span>
+            <span style="display:flex;align-items:center;gap:3px">
+              <span style="width:10px;height:10px;background:#e74c3c;border-radius:2px;display:inline-block"></span>예약
+            </span>
+          </div>
+          <div id="heatmap" style="overflow-x:auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /flex:1 -->
+
+<footer>
+  <div>김포시체육회 파르코스 테니스장 코트 현황 · 데이터는 매 시간 자동 갱신됩니다</div>
+  <div style="margin-top:2px">
+    <a href="http://www.gimposports.or.kr" target="_blank">공식 사이트</a>
+    &nbsp;·&nbsp; 고촌읍 신곡로 114-13 &nbsp;·&nbsp; 010-6767-4994
+    &nbsp;·&nbsp;
+    <a href="https://github.com/cho2405/tennis" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+//  설정
+// ══════════════════════════════════════
+const DATA_BASE = './data';
+const COURTS    = ['A관','B관','C관','D관','E관','F관','G관','H관'];
+const COURT_NAMES = {'A관':'1코트','B관':'2코트','C관':'3코트','D관':'4코트',
+                     'E관':'5코트','F관':'6코트','G관':'7코트','H관':'8코트'};
+
+let _cache = {};   // { YYYYMMDD: data }
+
+// ══════════════════════════════════════
+//  탭 전환
+// ══════════════════════════════════════
+function showTab(name) {
+  ['intro','court','stats'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
+    const nav = document.getElementById('nav-'+t);
+    if(nav) nav.classList.toggle('active', t===name);
+  });
+  return false;
+}
+
+// ══════════════════════════════════════
+//  날짜 탭 생성
+// ══════════════════════════════════════
+function buildDateTabs(containerId, onSelect) {
+  const wrap = document.getElementById(containerId);
+  const days = ['일','월','화','수','목','금','토'];
+  const today = new Date();
+  for(let i=0; i<14; i++){
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const ymd = d.toISOString().slice(0,10).replace(/-/g,'');
+    const dow = d.getDay();
+    const label = `${d.getMonth()+1}/${d.getDate()}(${days[dow]})`;
+    const tab = document.createElement('div');
+    tab.className = 'dtab' + (i===0?' active':'');
+    if(dow===0) tab.classList.add('sun');
+    if(dow===6) tab.classList.add('sat');
+    tab.textContent = label;
+    tab.dataset.ymd = ymd;
+    tab.onclick = () => {
+      wrap.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      onSelect(ymd);
+    };
+    wrap.appendChild(tab);
+  }
+  // 오늘 자동 선택
+  const first = wrap.querySelector('.dtab');
+  if(first) onSelect(first.dataset.ymd);
+}
+
+// ══════════════════════════════════════
+//  데이터 로드 (캐시)
+// ══════════════════════════════════════
+async function loadData(date) {
+  if(_cache[date]) return _cache[date];
+  const url = `${DATA_BASE}/${date}.json?_=${Date.now()}`;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(`데이터 없음 (${date})`);
+  const data = await r.json();
+  _cache[date] = data;
+  return data;
+}
+
+// ══════════════════════════════════════
+//  코트현황 렌더링
+// ══════════════════════════════════════
+async function renderCourt(date) {
+  document.getElementById('courtMsg').textContent = '⏳ 조회 중...';
+  document.getElementById('courtMsg').style.display = '';
+  document.getElementById('courtResult').style.display = 'none';
+  try {
+    const data = await loadData(date);
+    const rooms = COURTS;
+    const allT  = new Set();
+    rooms.forEach(r => (data[r]?.slots||[]).forEach(s=>allT.add(s.time)));
+    const times = [...allT].sort();
+
+    // 헤더
+    document.getElementById('courtThead').innerHTML =
+      '<tr><th>시간</th>' + rooms.map(r=>`<th>${COURT_NAMES[r]}</th>`).join('') + '</tr>';
+
+    // 집계
+    let total=0, avail=0;
+    times.forEach(t=>rooms.forEach(r=>{
+      const m={};(data[r]?.slots||[]).forEach(s=>m[s.time]=s.available);
+      if(t in m){total++;if(m[t])avail++;}
+    }));
+    const pct = total ? Math.round(avail/total*100) : 0;
+    document.getElementById('courtSummary').innerHTML =
+      `<span class="badge b-green">○ 가능 ${avail}</span>` +
+      `<span class="badge b-red">× 예약됨 ${total-avail}</span>` +
+      `<span class="badge b-blue">가용률 ${pct}%</span>`;
+
+    // 바디
+    const tbody = document.getElementById('courtTbody');
+    tbody.innerHTML = '';
+    times.forEach(t => {
+      const tr = document.createElement('tr');
+      if(t==='18:00') tr.classList.add('night-sep');
+      const td0 = document.createElement('td');
+      td0.className='tc'; td0.textContent=t; tr.appendChild(td0);
+      rooms.forEach(r=>{
+        const m={};(data[r]?.slots||[]).forEach(s=>m[s.time]=s.available);
+        const td=document.createElement('td');
+        if(!(t in m)){td.className='slot-na';td.textContent='-';}
+        else if(m[t]){td.innerHTML='<span class="slot-o">○</span>';}
+        else{td.innerHTML='<span class="slot-x">×</span>';}
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('courtUpdated').textContent =
+      `기준: ${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+    document.getElementById('courtMsg').style.display='none';
+    document.getElementById('courtResult').style.display='';
+  } catch(e) {
+    document.getElementById('courtMsg').textContent = '❌ ' + e.message;
+  }
+}
+
+// ══════════════════════════════════════
+//  참여현황 렌더링
+// ══════════════════════════════════════
+async function renderStats(date) {
+  document.getElementById('statsMsg').textContent = '⏳ 조회 중...';
+  document.getElementById('statsMsg').style.display = '';
+  document.getElementById('statsResult').style.display = 'none';
+  try {
+    const data = await loadData(date);
+    const rooms = COURTS;
+    const allT  = new Set();
+    rooms.forEach(r=>(data[r]?.slots||[]).forEach(s=>allT.add(s.time)));
+    const times = [...allT].sort();
+
+    let total=0, avail=0;
+    times.forEach(t=>rooms.forEach(r=>{
+      const m={};(data[r]?.slots||[]).forEach(s=>m[s.time]=s.available);
+      if(t in m){total++;if(m[t])avail++;}
+    }));
+    document.getElementById('s-total').textContent  = total;
+    document.getElementById('s-avail').textContent  = avail;
+    document.getElementById('s-booked').textContent = total-avail;
+    document.getElementById('s-rate').textContent   = (total?Math.round((total-avail)/total*100):0)+'%';
+
+    // 코트별 바
+    const barsDiv = document.getElementById('courtBars');
+    barsDiv.innerHTML = '';
+    rooms.forEach(r=>{
+      const m={};(data[r]?.slots||[]).forEach(s=>m[s.time]=s.available);
+      const rT=Object.keys(m).length;
+      const rB=Object.values(m).filter(v=>!v).length;
+      const rP=rT?Math.round(rB/rT*100):0;
+      const col=rP>=80?'#e74c3c':rP>=50?'#e67e22':'#27ae60';
+      barsDiv.innerHTML+=`
+        <div class="bar-wrap">
+          <div class="bar-lbl">
+            <span style="font-weight:600">${COURT_NAMES[r]}</span>
+            <span style="color:#aaa">${rB}/${rT} (${rP}%)</span>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" style="width:${rP}%;background:${col}"></div>
+          </div>
+        </div>`;
+    });
+
+    // 히트맵
+    const hmDiv = document.getElementById('heatmap');
+    hmDiv.innerHTML = '';
+    // 헤더행
+    const headerRow = document.createElement('div');
+    headerRow.className='hm-row';
+    headerRow.innerHTML='<div class="hm-time"></div>';
+    const hcells=document.createElement('div'); hcells.className='hm-cells';
+    rooms.forEach(r=>{
+      const c=document.createElement('div');
+      c.style.cssText='flex:1;text-align:center;font-size:.68rem;color:#aaa';
+      c.textContent=COURT_NAMES[r]; hcells.appendChild(c);
+    });
+    headerRow.appendChild(hcells); hmDiv.appendChild(headerRow);
+
+    times.forEach(t=>{
+      const row=document.createElement('div'); row.className='hm-row';
+      const tl=document.createElement('div'); tl.className='hm-time'; tl.textContent=t;
+      row.appendChild(tl);
+      const cells=document.createElement('div'); cells.className='hm-cells';
+      rooms.forEach(r=>{
+        const m={};(data[r]?.slots||[]).forEach(s=>m[s.time]=s.available);
+        const c=document.createElement('div');
+        c.className='hm-cell '+(!(t in m)?'hm-na':m[t]?'hm-o':'hm-x');
+        c.title=`${COURT_NAMES[r]} ${t}: ${!(t in m)?'없음':m[t]?'예약가능':'예약됨'}`;
+        cells.appendChild(c);
+      });
+      row.appendChild(cells); hmDiv.appendChild(row);
+    });
+
+    document.getElementById('statsUpdated').textContent =
+      `기준: ${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+    document.getElementById('statsMsg').style.display='none';
+    document.getElementById('statsResult').style.display='';
+  } catch(e) {
+    document.getElementById('statsMsg').textContent='❌ '+e.message;
+  }
+}
+
+// ══════════════════════════════════════
+//  초기화
+// ══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // meta.json 로드 (마지막 갱신 시각)
+  fetch(`${DATA_BASE}/meta.json?_=${Date.now()}`)
+    .then(r=>r.json())
+    .then(m=>{
+      document.getElementById('metaUpdated').textContent = '갱신: '+m.updated;
+    })
+    .catch(()=>{
+      document.getElementById('metaUpdated').textContent = '';
+    });
+
+  // 날짜 탭 빌드
+  buildDateTabs('courtDateTabs', renderCourt);
+  buildDateTabs('statsDateTabs', renderStats);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+name: Fetch Court Status
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # 매 시간 정각 (UTC) = 한국 매 시간 9시간 오프셋
+  workflow_dispatch:        # 수동 실행 버튼
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch court data
+        run: python scripts/fetch_slots.py
+
+      - name: Commit & Push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "chore: update court data $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M KST')"
+          git push
